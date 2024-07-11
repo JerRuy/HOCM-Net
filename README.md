@@ -59,19 +59,19 @@ python  main.py
   --pred_filter "1,2,3" \
   --rename_map "0, 1, 2, 3, 4, 5, 6, 7, 8" \
   --resize_r "0.9" \
-  --traindata_dir "../../../HCM_GD_resize/original" \
+  --traindata_dir "../../../HOCM24/original" \
   --chkpoint_dir "../outcome/model/checkpoint" \
   --chkpoint_dir2 "../outcome/model/checkpoint2" \
   --chkpoint_dir3 "../outcome/model/checkpoint3" \
   --learning_rate "0.001" \
   --beta1 "0.5" \
   --epoch "54000" \
-  --model_name "ds_ft_hybrid_4ct.model" \
+  --model_name "HOCM-Net.model" \
   --save_intval "2000" \
-  --testdata_dir "../../../HCM_GD_resize/test1/image" \
+  --testdata_dir "../../../HOCM24/test/image" \
   --labeling_dir "../result-test" \
-  --testlabel_dir "../../../HCM_GD_resize/test1/label" \
-  --predlabel_dir "../../../HCM_GD_resize/train/pred_label" \
+  --testlabel_dir "../../../HOCM24/test/label" \
+  --predlabel_dir "../../../HOCM24/train/pred_label" \
   --ovlp_ita "4"
 ```
 
