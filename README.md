@@ -23,7 +23,7 @@ The script main.sh allows you to configure various parameters for the training a
 * --inputI_chn: The number of channels in the input images. Default is 1.
 * --outputI_size: The size of the output images. Default is 96.
 * --output_chn: The number of channels in the output images. Default is 9.
-* --pred_filter: The filter used to pred data. Default is 0, 1, 2, 3, 4, 5, 6, 7, 8.
+* --pred_filter: The filter used to pred data. Default is 1, 2, 6.
 * --rename_map: The map used to rename labels. Default is 0, 1, 2, 3, 4, 5, 6, 7, 8.
 * --resize_r: The resize ratio for the images. Default is 0.9.
 * --traindata_dir: The directory where the training data is stored. Default is ../../../HOCM24/original.
@@ -56,7 +56,7 @@ python  main.py
   --inputI_chn "1" \
   --outputI_size "96" \
   --output_chn "9" \
-  --pred_filter "1,2,3" \
+  --pred_filter "1,2,6" \
   --rename_map "0, 1, 2, 3, 4, 5, 6, 7, 8" \
   --resize_r "0.9" \
   --traindata_dir "../../../HOCM24/original" \
