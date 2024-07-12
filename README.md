@@ -40,7 +40,7 @@ The script main.sh allows you to configure various parameters for the training a
 * --testlabel_dir: The directory where the test labels are stored. Default is ../../../HOCM24/test/label.
 * --predlabel_dir: The directory where the pred labels are stored. Default is ../../../HOCM24/test/pred_label.
 * --ovlp_ita: The overlap iteration parameter. Default is 4.
-* 
+
 ## Running the Script
 
 To run the script with default parameters:
@@ -77,7 +77,9 @@ python  main.py
 
 ## Directory Structure
 
+
 Ensure that the directory structure is set up correctly as follows:
+
     project/
     ├── main.sh
     ├── main.py
@@ -86,12 +88,12 @@ Ensure that the directory structure is set up correctly as follows:
     ├── seg_eval.py
     ├── utils.py
     ├── result/
-    └── outcome              
-        └── model/            
-              ├── checkpoint/  
-              ├── checkpoint/      
-              └── checkpoint3/
-     
+    └── outcome
+        └── model/
+            ├── checkpoint
+            ├── checkpoint2
+            └── checkpoint3
+    
 -   `result/`: Directory output label data.
 -   `outcome/model/checkpoint/`: Directory where model checkpoints will be saved.
 
