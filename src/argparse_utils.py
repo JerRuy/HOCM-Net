@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument("--inputI_chn", type=int, default=1, help="Number of input image channels")
     parser.add_argument("--outputI_size", type=int, default=96, help="Size of output images")
     parser.add_argument("--output_chn", type=int, default=9, help="Number of output image channels")
-    parser.add_argument("--pred_filter", type=str, default="0,1,2,3,4,5,6,7,8", help="filter for pred data")
+    parser.add_argument("--pred_filter", type=str, default="1,2,6", help="filter for pred data")
     parser.add_argument("--rename_map", type=str, default="0, 1, 2, 3, 4, 5, 6, 7, 8", help="Renaming map for input/output files")
     parser.add_argument("--resize_r", type=float, default=0.9, help="Resize ratio for input images")
     parser.add_argument("--traindata_dir", type=str, default="../../../HOCM24/original", help="Directory for training data")
