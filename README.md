@@ -88,7 +88,7 @@ Ensure that the directory structure is set up correctly as follows:
     ├── seg_eval.py
     ├── utils.py
     ├── result/
-    └── outcome
+    └── outcome/
         └── model/
             ├── checkpoint
             ├── checkpoint2
