@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 设置默认参数 
-PHASE="train_step2"  #取值有： train_step1 train_step2_pred_gent train_step2 train_step3 test  其中：train_step1最原始的，train_step2保存到外部的pred，再加载合并；train_step3在模型里合并pred。
+PHASE="train_step1"  #取值有： train_step1 train_step2_pred_gent train_step2 train_step3 test  其中：train_step1最原始的，train_step2保存到外部的pred，再加载合并；train_step3在模型里合并pred。
 BATCH_SIZE=1
 INPUT_SIZE=96
 INPUT_CHANNELS=1
@@ -10,19 +10,19 @@ OUTPUT_CHANNELS=9
 PRED_FILTER="1,2,3"
 RENAME_MAP="0, 1, 2, 3, 4, 5, 6, 7, 8"
 RESIZE_RATIO=0.9
-TRAIN_DATA_DIR="../../../HCM_GD_resize/original"
-PRED_LABELING_DIR="../../../HCM_GD_resize/train/pred_label"
+TRAIN_DATA_DIR="../../../HOCM24/original"
+PRED_LABELING_DIR="../../../HOCM24/train/pred_label"
 CHECKPOINT_DIR="../outcome/model/checkpoint"
 CHECKPOINT_DIR2="../outcome/model/checkpoint2"
 CHECKPOINT_DIR3="../outcome/model/checkpoint3"
 LEARNING_RATE=0.001
 BETA1=0.5
-EPOCHS=20000
-MODEL_NAME="ds_ft_hybrid_4ct.model"
+EPOCHS=54000
+MODEL_NAME="HOCM-Net.model"
 SAVE_INTERVAL=2000
-TEST_DATA_DIR="../../../HCM_GD_resize/test2/image"
+TEST_DATA_DIR="../../../HOCM24/test/image"
 LABELING_DIR="../result"
-TEST_LABEL_DIR="../../../HCM_GD_resize/test2/label"
+TEST_LABEL_DIR="../../../HOCM24/test/label"
 OVERLAP_ITER=4
 
 # 将参数传递给 Python 脚本
