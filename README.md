@@ -82,12 +82,13 @@ python  main.py
 Ensure that the directory structure is set up correctly as follows:
 
     project/
-    ├── main.sh
-    ├── main.py
-    ├── model.py
-    ├── ops.py
-    ├── seg_eval.py
-    ├── utils.py
+    ├── src/
+    |    ├── main.sh
+    |    ├── main.py
+    |    ├── model.py
+    |    ├── ops.py
+    |    ├── seg_eval.py
+    |    └── utils.py
     ├── result/
     └── outcome/
         └── model/
