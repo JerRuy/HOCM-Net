@@ -1,3 +1,4 @@
+#HOCM-Net: 3D Coarse-to-Fine Structural Prior Fusion based Segmentation Network for the Surgical Planning of Hypertrophic Obstructive Cardiomyopathy
 
 # README
 
