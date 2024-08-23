@@ -35,23 +35,15 @@ def Deconv3d(input, output_chn, name):
 
 def Upsampling3d(input, output_chn, name):
     batch, in_depth, in_height, in_width, in_channels = [int(d) for d in input.get_shape()]
-    # filter = tf.get_variable(name+"/filter", shape=[4, 4, 4, output_chn, in_channels], dtype=tf.float32,
-    #                          initializer=tf.random_normal_initializer(0, 0.01), regularizer=slim.l2_regularizer(0.0005))
-
-    # conv = tf.nn.conv3d_transpose(value=input, filter=filter, output_shape=[batch, in_depth * 2, in_height * 2, in_width * 2, output_chn],
-    #                               strides=[1, 2, 2, 2, 1], padding="SAME", name=name)
     output_tensor = tf.nn.interpolate3d(input,
                                         size=[in_depth * 2, in_height * 2, in_width * 2],
                                         method='linear')
     return output_tensor
 
 
-
-
 def deconv_bn_relu(input, output_chn, is_training, name):
     with tf.variable_scope(name):
         conv = Deconv3d(input, output_chn, name='deconv')
-        # with tf.device("/cpu:0"):
         bn = tf.contrib.layers.batch_norm(conv, decay=0.9, updates_collections=None, epsilon=1e-5, scale=True, is_training=is_training, scope="batch_norm")
         relu = tf.nn.relu(bn, name='relu')
     return relu
@@ -129,3 +121,4 @@ def filter_tensor(tensor, values):
     combined_mask = tf.reduce_any(tf.stack(masks), axis=0) 
     filtered_tensor = tf.where(combined_mask, tensor, tf.zeros_like(tensor))
     return filtered_tensor
+    

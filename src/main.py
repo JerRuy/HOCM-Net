@@ -1,7 +1,6 @@
 import os
 import tensorflow as tf
 
-#from ini_file_io import load_train_ini
 from argparse_utils import parse_args
 from model import unet_3D_xy
 
@@ -11,7 +10,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 def main(_):
     # load training parameter #
-#    ini_file = '../outcome/model/ini/tr_param.ini'
     param_sets = parse_args()
     param_set = param_sets[0]
 

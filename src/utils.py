@@ -14,7 +14,7 @@ def load_pred_data(path_list, resize_r, rename_map):
     """load all volume pairs"""
     pred_clec = []
 
-    # rename_map = [0, 205, 420, 500, 550, 600, 820, 850]
+
     for k in range(0, len(path_list)):
         lab_path = path_list[k]
         lab_data = nib.load(lab_path).get_data().copy()
@@ -41,7 +41,7 @@ def load_data_pairs(pair_list, resize_r, rename_map):
     img_clec = []
     label_clec = []
 
-    # rename_map = [0, 205, 420, 500, 550, 600, 820, 850]
+
     for k in range(0, len(pair_list), 2):
         img_path = pair_list[k]
         lab_path = pair_list[k+1]
@@ -59,9 +59,6 @@ def load_data_pairs(pair_list, resize_r, rename_map):
         for i in range(len(rename_map)):
             lab_r_data[lab_data == rename_map[i]] = i
 
-        # for s in range(img_data.shape[2]):
-        #     cv2.imshow('img', np.concatenate(((img_data[:,:,s]).astype('uint8'), (lab_r_data[:,:,s]*30).astype('uint8')), axis=1))
-        #     cv2.waitKey(20)
 
         img_clec.append(img_data)
         label_clec.append(lab_r_data)
@@ -283,8 +280,6 @@ def compose_label_cube2vol(cube_list, vol_dim, cube_size, ita, class_n):
                 label_classes_mat[r_s:r_e, c_s:c_e, h_s:h_e, :] = label_classes_mat[r_s:r_e, c_s:c_e, h_s:h_e, :] + idx_classes_mat
 
                 p_count += 1
-    # print 'label mat unique:'
-    # print np.unique(label_mat)
 
     compose_vol = np.argmax(label_classes_mat, axis=3)
     # print np.unique(label_mat)
@@ -335,21 +330,6 @@ def compose_prob_cube2vol(cube_list, vol_dim, cube_size, ita, class_n):
 
 # Remove small connected components
 def remove_minor_cc(vol_data, rej_ratio, rename_map):
-    """Remove small connected components refer to rejection ratio"""
-    """Usage
-        # rename_map = [0, 205, 420, 500, 550, 600, 820, 850]
-        # nii_path = '/home/xinyang/project_xy/mmwhs2017/dataset/ct_output/test/test_4.nii'
-        # vol_file = nib.load(nii_path)
-        # vol_data = vol_file.get_data().copy()
-        # ref_affine = vol_file.affine
-        # rem_vol = remove_minor_cc(vol_data, rej_ratio=0.2, class_n=8, rename_map=rename_map)
-        # # save
-        # rem_path = 'rem_cc.nii'
-        # rem_vol_file = nib.Nifti1Image(rem_vol, ref_affine)
-        # nib.save(rem_vol_file, rem_path)
-
-        #===# possible be parallel in future
-    """
 
     rem_vol = copy.deepcopy(vol_data)
     class_n = len(rename_map)
@@ -358,12 +338,8 @@ def remove_minor_cc(vol_data, rej_ratio, rename_map):
         print( 'processing class %d...' % c)
 
         class_idx = (vol_data==rename_map[c])*1
-        # print("1", np.shape(class_idx))
         class_vol = np.sum(class_idx)
-        # print("2", class_vol )
         labeled_cc, num_cc = measurements.label(class_idx)
-        # print('3',labeled_cc, num_cc )
-        # retrieve all connected components in this class
         for cc in range(1, num_cc+1):
             single_cc = ((labeled_cc==cc)*1)
             single_vol = np.sum(single_cc)

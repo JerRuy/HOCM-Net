@@ -58,12 +58,6 @@ class unet_3D_xy(object):
 
     # class-weighted cross-entropy loss function
     def softmax_weighted_loss(self, logits, labels):
-        """
-        Loss = weighted * -target*log(softmax(logits))
-        :param logits: probability score
-        :param labels: ground_truth
-        :return: softmax-weifhted loss
-        """
         gt = tf.one_hot(labels, self.output_chn)
         pred = logits
         softmaxpred = tf.nn.softmax(pred)
@@ -72,8 +66,6 @@ class unet_3D_xy(object):
             gti = gt[:, :, :, :, i]
             predi = softmaxpred[:, :, :, :, i]
             weighted = 1 - (tf.reduce_sum(gti) / tf.reduce_sum(gt))
-            # print("class %d"%(i))
-            # print(weighted)
             loss = loss + -tf.reduce_mean(weighted * gti * tf.log(tf.clip_by_value(predi, 0.005, 1)))
         return loss
 
@@ -265,48 +257,6 @@ class unet_3D_xy(object):
             ###################################################################################################################################
             # ###################################################################################################################################
             # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################ ###################################################################################################################################
-            # ###################################################################################################################################
-            # ###################################################################################################################################
-            #####################################################################################################################################
-            ############################################################################################################
         with tf.device("/gpu:0"):
             soft_prob_new = filter_tensor(soft_prob, self.pred_filter)
             inputI_0 = tf.concat([inputI, soft_prob_new], axis=concat_dim, name='concat_p1_0')
@@ -390,19 +340,9 @@ class unet_3D_xy(object):
         # print(init_op)
         self.sess.run(init_op)
 
-        # load C3D model
-        # self.initialize_finetune()
-
-        # save .log
         self.log_writer = tf.summary.FileWriter("./logs", self.sess.graph)
 
         counter = 1
-        # if self.load_chkpoint(self.chkpoint_dir):
-        #     print(" [*] Load SUCCESS")
-        # else:
-        #     print(" [!] Load failed...")
-
-        # load all volume files
         pair_list = glob('{}/*.nii.gz'.format(self.traindata_dir))
         pair_list.sort()
         img_clec, label_clec = load_data_pairs(pair_list, self.resize_r, self.rename_map)
@@ -421,12 +361,10 @@ class unet_3D_xy(object):
             # Update 3D U-net
             _, cur_train_loss = self.sess.run([u_optimizer, self.total_loss],
                                               feed_dict={self.input_I: batch_img, self.input_gt: batch_label})
-            # self.log_writer.add_summary(summary_str, counter)
 
             # current and validation loss
             cur_valid_loss = self.total_loss.eval({self.input_I: batch_val_img, self.input_gt: batch_val_label})
             cube_label = self.sess.run(self.pred_label, feed_dict={self.input_I: batch_val_img})
-            # dice_loss = self.sess.run(self.dice_loss, feed_dict={self.input_I: batch_val_img, self.input_gt: batch_val_label})
             print(np.unique(batch_label))
             print(np.unique(cube_label))
             # dice value
@@ -543,8 +481,6 @@ class unet_3D_xy(object):
         for epoch in np.arange(self.epoch):
             start_time = time.time()
             # train batch
-            # batch_img, batch_label = get_batch_patches(img_clec, label_clec, self.inputI_size, self.batch_size, chn=1,
-            #                                            flip_flag=True, rot_flag=True)
 
             batch_img, batch_label = get_batch_patches_fuse(img_clec, label_clec, pred_clec, self.inputI_size, self.batch_size, self.pred_filter, chn=1,
                                                        flip_flag=True, rot_flag=True)
@@ -605,7 +541,6 @@ class unet_3D_xy(object):
         for k in range(0, len(test_list)):
             # load the volume
             print('loading ', test_list[k])
-            # print('loading ',test_list[k].split('/')[9])
             test_name = test_list[k].split('/')[-1]
             vol_file = nib.load(test_list[k])
             ref_affine = vol_file.affine
@@ -620,8 +555,6 @@ class unet_3D_xy(object):
             vol_data_resz = vol_data_resz.astype('float32')
             vol_data_resz = vol_data_resz / 255.0
 
-            # decompose volume into list of cubes
-            # print(np.shape(vol_data_resz))
             cube_list = decompose_vol2cube(vol_data_resz, self.batch_size, self.inputI_size, self.inputI_chn,
                                            self.ovlp_ita)
             # predict on each cube
@@ -634,7 +567,6 @@ class unet_3D_xy(object):
 
                 cube_label = self.sess.run(self.pred_label, feed_dict={self.input_I: cube2test_norm})
                 cube_label_list.append(cube_label)
-                # print np.unique(cube_label)
             # compose cubes into a volume
             composed_orig = compose_label_cube2vol(cube_label_list, resize_dim, self.inputI_size, self.ovlp_ita,
                                                    self.output_chn)
@@ -645,19 +577,12 @@ class unet_3D_xy(object):
             composed_label = composed_label.astype('int16')
             print(np.unique(composed_label))
 
-            # for s in range(composed_label.shape[2]):
-            #     cv2.imshow('volume_seg', np.concatenate(((vol_data_resz[:, :, s]*255.0).astype('uint8'), (composed_label[:, :, s]/4).astype('uint8')), axis=1))
-            #     cv2.waitKey(30)
-
             # save predicted label
             composed_label_resz = resize(composed_label, vol_data.shape, order=0, preserve_range=True)
             composed_label_resz = composed_label_resz.astype('int16')
 
-            # remove minor connected components
-            # composed_label_resz = remove_minor_cc(composed_label_resz, rej_ratio=0.3, rename_map=self.rename_map)
 
             labeling_path = os.path.join(self.labeling_dir, test_name)
-            # labeling_path = os.path.join(self.labeling_dir, ('ct_test_' + str(2001+k) + '_label.nii.gz'))
             labeling_vol = nib.Nifti1Image(composed_label_resz, ref_affine)
             nib.save(labeling_vol, labeling_path)
 
@@ -688,7 +613,6 @@ class unet_3D_xy(object):
             vol_data = vol_file.get_data().copy()
             resize_dim = (np.array(vol_data.shape) * self.resize_r).astype('int')
 
-            # print(np.array(vol_data.shape),resize_dim)
             vol_data_resz = resize(vol_data, resize_dim, order=1, preserve_range=True)
             # normalization
             vol_data_resz = vol_data_resz.astype('float32')
@@ -707,7 +631,6 @@ class unet_3D_xy(object):
 
                 cube_label = self.sess.run(self.pred_label, feed_dict={self.input_I: cube2test_norm})
                 cube_label_list.append(cube_label)
-                # print np.unique(cube_label)
             # compose cubes into a volume
             composed_orig = compose_label_cube2vol(cube_label_list, resize_dim, self.inputI_size, self.ovlp_ita,
                                                    self.output_chn)
@@ -717,10 +640,6 @@ class unet_3D_xy(object):
                 composed_label[composed_orig == i] = self.rename_map[i]
             composed_label = composed_label.astype('int16')
             print(np.unique(composed_label))
-
-            # for s in range(composed_label.shape[2]):
-            #     cv2.imshow('volume_seg', np.concatenate(((vol_data_resz[:, :, s]*255.0).astype('uint8'), (composed_label[:, :, s]/4).astype('uint8')), axis=1))
-            #     cv2.waitKey(30)
 
             dir_path, file_name = os.path.split(test_list[k])
             label_file_name = file_name.replace("image", "label")
@@ -740,9 +659,6 @@ class unet_3D_xy(object):
 
             k_dice_c = seg_eval_metric(composed_label_resz, gt_label)
             print("dice_c:", k_dice_c)
-
-            #            dc, jc, hd, asd= calculate_metric_percase(composed_label_resz, gt_label)
-            #            print(' dc:',dc,' jc:',jc,' 95HD:',hd,' ASD:',asd)
 
             print("predice path: ", labeling_path)
             print("label   path: ", testlabel_path)
@@ -791,7 +707,6 @@ class unet_3D_xy(object):
             vol_data = vol_file.get_data().copy()
             resize_dim = (np.array(vol_data.shape) * self.resize_r).astype('int')
             #
-            # print(np.array(vol_data.shape),resize_dim)
             vol_data_resz = resize(vol_data, resize_dim, order=1, preserve_range=True)
             # normalization
             vol_data_resz = vol_data_resz.astype('float32')
@@ -815,23 +730,19 @@ class unet_3D_xy(object):
                 # label cube
                 cube_label = self.sess.run(self.pred_label, feed_dict={self.input_I: cube2test_norm})
                 cube_label_list.append(cube_label)
-                # print np.unique(cube_label)
             # compose cubes into a volume
             composed_prob_orig = compose_prob_cube2vol(cube_prob_list, resize_dim, self.inputI_size, self.ovlp_ita,
                                                        self.output_chn)
             print("=== prob volume is composed!")
 
-            # composed_label_orig = np.argmax(composed_prob_orig, axis=3)
 
             # resize probability map and save
-            # composed_prob_resz = np.array([vol_data.shape[0], vol_data.shape[1], vol_data.shape[2], self.output_chn])
             min_prob = np.min(composed_prob_orig)
             max_prob = np.max(composed_prob_orig)
             for p in range(self.output_chn):
                 composed_prob_resz = resize(composed_prob_orig[:, :, :, p], vol_data.shape, order=1,
                                             preserve_range=True)
 
-                # composed_prob_resz = (composed_prob_resz - np.min(composed_prob_resz)) / (np.max(composed_prob_resz) - np.min(composed_prob_resz))
                 composed_prob_resz = (composed_prob_resz - min_prob) / (max_prob - min_prob)
                 composed_prob_resz = composed_prob_resz * 255
                 composed_prob_resz = composed_prob_resz.astype('int16')
@@ -840,8 +751,6 @@ class unet_3D_xy(object):
                 c_map_vol = nib.Nifti1Image(composed_prob_resz, ref_affine)
                 nib.save(c_map_vol, c_map_path)
                 print("=== probl volume is saved!")
-                # c_map_path = os.path.join("/home/xinyang/project_xy/mmwhs2017/dataset/common/dice_map", ('auxi_' + str(test_cnt) + '_c' + str(p) + '.npy'))
-                # np.save(c_map_path, composed_prob_resz)
 
             test_cnt = test_cnt + 1
 
